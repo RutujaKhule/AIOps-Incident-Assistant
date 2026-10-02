@@ -78,6 +78,7 @@ app.add_middleware(
         "http://127.0.0.1:3000",
         "http://localhost:5173",
         "http://127.0.0.1:5173",
+        "https://aiops-incident-assistant-1.onrender.com",
     ],
     allow_credentials=False,
     allow_methods=["GET", "POST"],
