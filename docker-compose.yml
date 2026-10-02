@@ -1,0 +1,78 @@
+services:
+  mongodb:
+    image: mongo:8.0
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${MONGODB_PORT:-27017}:27017"
+    volumes:
+      - mongodb_data:/data/db
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping').ok"]
+      interval: 10s
+      timeout: 5s
+      start_period: 15s
+      retries: 5
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile.backend
+    restart: unless-stopped
+    environment:
+      HOST: 0.0.0.0
+      PORT: 8000
+      MONGODB_URI: mongodb://mongodb:27017
+      MONGODB_DATABASE: ${MONGODB_DATABASE:-AIOpsIncidentAssistant}
+      AI_PROVIDER: ${AI_PROVIDER:-mock}
+      AI_MAX_METRICS: ${AI_MAX_METRICS:-30}
+      AI_MAX_LOGS: ${AI_MAX_LOGS:-10}
+      AI_MAX_CONTEXT_CHARS: ${AI_MAX_CONTEXT_CHARS:-12000}
+      CPU_THRESHOLD_PERCENT: ${CPU_THRESHOLD_PERCENT:-90}
+      RAM_THRESHOLD_PERCENT: ${RAM_THRESHOLD_PERCENT:-90}
+      DISK_THRESHOLD_PERCENT: ${DISK_THRESHOLD_PERCENT:-90}
+      ISOLATION_FOREST_ENABLED: ${ISOLATION_FOREST_ENABLED:-true}
+      ISOLATION_FOREST_MIN_SAMPLES: ${ISOLATION_FOREST_MIN_SAMPLES:-50}
+      ISOLATION_FOREST_CONTAMINATION: ${ISOLATION_FOREST_CONTAMINATION:-0.05}
+      ISOLATION_FOREST_RANDOM_STATE: ${ISOLATION_FOREST_RANDOM_STATE:-42}
+      LOG_REPEAT_COUNT: ${LOG_REPEAT_COUNT:-3}
+      LOG_REPEAT_WINDOW_SECONDS: ${LOG_REPEAT_WINDOW_SECONDS:-60}
+      DETECTION_POLL_INTERVAL_SECONDS: ${DETECTION_POLL_INTERVAL_SECONDS:-5}
+    ports:
+      - "127.0.0.1:${BACKEND_PORT:-8000}:8000"
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health/ready', timeout=3)",
+        ]
+      interval: 15s
+      timeout: 5s
+      start_period: 20s
+      retries: 5
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        VITE_API_BASE_URL: ${VITE_API_BASE_URL:-http://localhost:8000}
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:${FRONTEND_PORT:-5173}:80"
+    depends_on:
+      backend:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://127.0.0.1/health"]
+      interval: 15s
+      timeout: 5s
+      start_period: 5s
+      retries: 3
+
+volumes:
+  mongodb_data:

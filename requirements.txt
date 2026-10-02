@@ -1,0 +1,6 @@
+psutil
+pymongo
+fastapi
+uvicorn
+httpx2
+scikit-learn
