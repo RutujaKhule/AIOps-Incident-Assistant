@@ -2,6 +2,9 @@
 
 A local-first AIOps monitoring project that collects real host telemetry and application logs, detects abnormal conditions, manages incidents, and provides free rule-based incident analysis through a web dashboard.
 
+## 🚀 Live Demo
+
+[View Live Application](https://aiops-incident-assistant-1.onrender.com)
 ## Features
 
 - Real CPU, memory, disk, and network metrics collected with `psutil`
