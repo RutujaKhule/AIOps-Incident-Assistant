@@ -34,6 +34,15 @@ class MetricsServiceTests(unittest.TestCase):
         self.assertEqual(tuple(document), METRIC_FIELDS)
         self.assertNotIn("unneeded", document)
 
+    def test_metric_document_preserves_optional_demo_source(self):
+        document = create_metric_document({**SAMPLE_METRICS, "source": "demo"})
+
+        self.assertEqual(document["source"], "demo")
+        self.assertEqual(
+            {field: document[field] for field in METRIC_FIELDS},
+            SAMPLE_METRICS,
+        )
+
     def test_save_metric_inserts_document(self):
         collection = Mock()
         collection.insert_one.return_value.inserted_id = "inserted-id"

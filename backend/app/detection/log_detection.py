@@ -82,6 +82,8 @@ def detect_repeated_log_errors(
                 "_trigger_log_id": newest_log.get("log_id", newest_timestamp.isoformat()),
             }
         )
+        if source == "demo":
+            incidents[-1]["source"] = "demo"
 
     return incidents
 

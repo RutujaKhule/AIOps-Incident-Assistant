@@ -210,6 +210,7 @@ export default function App() {
 
   const chartData = toChartData(history);
   const hasNoMetrics = !loading && latest == null && history.length === 0;
+  const isDemoTelemetry = latest?.source === 'demo' || latest?.hostname === 'AIOps-Demo-Server';
   const recentErrorWindow = recentErrors.filter((log) => {
     const timestamp = Date.parse(log.timestamp);
     const age = Date.now() - timestamp;
@@ -226,6 +227,9 @@ export default function App() {
             <h1>AIOps Incident Assistant</h1>
           </div>
         </div>
+        {isDemoTelemetry && (
+          <span className="demo-monitoring-badge">Demo Server Monitoring</span>
+        )}
         <StatusIndicator status={connection} />
       </header>
 

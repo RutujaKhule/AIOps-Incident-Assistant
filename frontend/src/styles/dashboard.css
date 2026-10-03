@@ -104,6 +104,17 @@ h1, h2, p { margin-top: 0; }
   background: #9a9f99;
 }
 
+.demo-monitoring-badge {
+  padding: 8px 10px;
+  border: 1px solid #c9ded0;
+  border-radius: 5px;
+  background: #edf6ef;
+  color: #35664b;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .connection-status--connected .connection-status__dot { background: #258569; box-shadow: 0 0 0 3px #e4f3eb; }
 .connection-status--disconnected .connection-status__dot { background: #bd4c40; box-shadow: 0 0 0 3px #fcebe8; }
 .connection-status--checking .connection-status__dot { background: #c08328; }

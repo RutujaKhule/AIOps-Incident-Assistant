@@ -48,6 +48,9 @@ class DetectionService:
             history.append(latest)
 
         candidates = detect_threshold_violations(latest)
+        if latest.get("source"):
+            for candidate in candidates:
+                candidate["source"] = latest["source"]
         if self.isolation_forest_enabled and isolation_forest.is_anomalous(
             history,
             minimum_samples=self.minimum_samples,
@@ -72,6 +75,8 @@ class DetectionService:
                     "detection_method": "ISOLATION_FOREST",
                 }
             )
+            if latest.get("source"):
+                candidates[-1]["source"] = latest["source"]
 
         created = []
         for candidate in candidates:

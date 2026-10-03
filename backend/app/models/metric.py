@@ -9,6 +9,7 @@ class Metric(BaseModel):
     disk_percent: float
     network_bytes_sent: int
     network_bytes_received: int
+    source: str | None = None
 
 
 class HealthResponse(BaseModel):

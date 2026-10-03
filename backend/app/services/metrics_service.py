@@ -25,7 +25,10 @@ def create_metric_document(metrics):
     missing_fields = [field for field in METRIC_FIELDS if field not in metrics]
     if missing_fields:
         raise ValueError(f"Metric is missing required fields: {', '.join(missing_fields)}")
-    return {field: metrics[field] for field in METRIC_FIELDS}
+    document = {field: metrics[field] for field in METRIC_FIELDS}
+    if "source" in metrics:
+        document["source"] = metrics["source"]
+    return document
 
 
 def save_metric(metrics, collection=None):

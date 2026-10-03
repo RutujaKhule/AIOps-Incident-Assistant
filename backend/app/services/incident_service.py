@@ -32,6 +32,8 @@ def create_incident(incident, collection=None):
         raise ValueError(f"Incident is missing required fields: {', '.join(missing_fields)}")
 
     document = {field: incident[field] for field in INCIDENT_FIELDS}
+    if "source" in incident:
+        document["source"] = incident["source"]
     if incident.get("deduplication_key"):
         document["deduplication_key"] = incident["deduplication_key"]
         document["trigger_log_id"] = incident.get("trigger_log_id")

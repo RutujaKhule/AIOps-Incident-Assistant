@@ -11,7 +11,7 @@ from backend.app.services.metrics_service import (
 router = APIRouter(prefix="/api/metrics", tags=["metrics"])
 
 
-@router.get("/latest", response_model=Metric)
+@router.get("/latest", response_model=Metric, response_model_exclude_none=True)
 def latest_metric():
     try:
         metric = get_latest_metric()
@@ -26,7 +26,7 @@ def latest_metric():
     return metric
 
 
-@router.get("/history", response_model=list[Metric])
+@router.get("/history", response_model=list[Metric], response_model_exclude_none=True)
 def metrics_history(
     minutes: int = Query(default=30, gt=0, le=10080),
     hostname: str | None = Query(default=None, min_length=1, max_length=255),

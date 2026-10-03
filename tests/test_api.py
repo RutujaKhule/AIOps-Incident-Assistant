@@ -129,6 +129,31 @@ class ApiTests(unittest.TestCase):
             limit=5,
         )
 
+    @patch(
+        "backend.app.api.metrics.get_metrics_history",
+        return_value=[
+            {**SAMPLE_METRIC, "hostname": "AIOps-Demo-Server", "source": "demo"},
+            {
+                **SAMPLE_METRIC,
+                "timestamp": "2026-10-02T12:00:05+00:00",
+                "hostname": "AIOps-Demo-Server",
+                "source": "demo",
+            },
+        ],
+    )
+    def test_metrics_history_returns_multiple_tagged_demo_samples(self, get_metrics_history):
+        response = self.client.get("/api/metrics/history")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()), 2)
+        self.assertTrue(all(item["source"] == "demo" for item in response.json()))
+        self.assertTrue(all(item["hostname"] == "AIOps-Demo-Server" for item in response.json()))
+        get_metrics_history.assert_called_once_with(
+            minutes=30,
+            hostname=None,
+            limit=100,
+        )
+
     def test_history_rejects_invalid_query_parameters(self):
         response = self.client.get("/api/metrics/history?minutes=0&limit=1001")
 

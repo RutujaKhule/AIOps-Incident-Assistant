@@ -22,7 +22,7 @@ def _database_error():
     )
 
 
-@router.get("", response_model=list[Incident])
+@router.get("", response_model=list[Incident], response_model_exclude_none=True)
 def get_incidents(
     hostname: Annotated[str | None, Query(min_length=1, max_length=255)] = None,
     status: IncidentStatus | None = None,
@@ -35,7 +35,7 @@ def get_incidents(
         raise _database_error() from error
 
 
-@router.get("/open", response_model=list[Incident])
+@router.get("/open", response_model=list[Incident], response_model_exclude_none=True)
 def get_open_incidents(
     hostname: Annotated[str | None, Query(min_length=1, max_length=255)] = None,
     severity: IncidentSeverity | None = None,
@@ -52,7 +52,7 @@ def get_open_incidents(
         raise _database_error() from error
 
 
-@router.get("/{incident_id}", response_model=Incident)
+@router.get("/{incident_id}", response_model=Incident, response_model_exclude_none=True)
 def get_incident_by_id(incident_id: str):
     try:
         incident = get_incident(incident_id)
@@ -75,11 +75,19 @@ def _change_status(incident_id, new_status):
     return incident
 
 
-@router.post("/{incident_id}/acknowledge", response_model=Incident)
+@router.post(
+    "/{incident_id}/acknowledge",
+    response_model=Incident,
+    response_model_exclude_none=True,
+)
 def acknowledge_incident(incident_id: str):
     return _change_status(incident_id, "ACKNOWLEDGED")
 
 
-@router.post("/{incident_id}/resolve", response_model=Incident)
+@router.post(
+    "/{incident_id}/resolve",
+    response_model=Incident,
+    response_model_exclude_none=True,
+)
 def resolve_incident(incident_id: str):
     return _change_status(incident_id, "RESOLVED")

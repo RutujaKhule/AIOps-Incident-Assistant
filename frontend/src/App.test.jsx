@@ -90,6 +90,22 @@ describe('monitoring dashboard', () => {
     expect(screen.getByText('Errors in recent window: 1')).toBeInTheDocument();
   });
 
+  it('identifies server-side demo telemetry', async () => {
+    getHealth.mockResolvedValue({ status: 'healthy' });
+    getLatestMetric.mockResolvedValue({
+      ...sampleMetric,
+      hostname: 'AIOps-Demo-Server',
+      source: 'demo',
+    });
+    getMetricHistory.mockResolvedValue([]);
+    getRecentErrors.mockResolvedValue([]);
+
+    render(<App />);
+
+    expect(await screen.findByText('Demo Server Monitoring')).toBeInTheDocument();
+    expect(screen.getByText('AIOps-Demo-Server')).toBeInTheDocument();
+  });
+
   it('shows a separate error state when recent logs cannot be loaded', async () => {
     getHealth.mockResolvedValue({ status: 'healthy' });
     getLatestMetric.mockResolvedValue(sampleMetric);

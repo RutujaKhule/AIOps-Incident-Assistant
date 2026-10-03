@@ -16,6 +16,7 @@ A local-first AIOps monitoring project that collects real host telemetry and app
 - Repeated ERROR/CRITICAL log detection and incident deduplication
 - Incident lifecycle: OPEN, ACKNOWLEDGED, RESOLVED
 - Free local rule-based incident analysis; no API key required
+- Optional server-side demo telemetry for always-on hosted dashboard demonstrations
 - Docker Compose deployment and GitHub Actions CI
 
 ## Architecture
@@ -123,6 +124,19 @@ Invoke-RestMethod "http://127.0.0.1:8000/api/metrics/history?minutes=30&hostname
 ```
 
 The API returns `503` with a generic message when MongoDB is unavailable; database connection details are not sent to clients.
+
+### Hosted Demo Telemetry
+
+The local monitoring agent remains the source of real machine metrics when `DEMO_MODE` is disabled (the default). For a hosted demonstration, configure these environment variables on the backend service:
+
+```text
+DEMO_MODE=true
+DEMO_SAMPLE_INTERVAL_SECONDS=5
+```
+
+In demo mode, one lightweight FastAPI lifespan task writes explicitly tagged (`source=demo`) synthetic metrics and occasional INFO/WARNING/ERROR logs to the existing MongoDB collections. The host is always `AIOps-Demo-Server`; these values do not represent an interviewer's computer. The existing detection loops process the generated data and use the existing incident service and free local analyzer. Active incidents are deduplicated as usual, and demo metrics/logs older than 24 hours are periodically pruned without touching local or untagged records. MongoDB outages are logged and retried on the next interval; health and API requests continue to be served.
+
+Keep `DEMO_MODE=false` for local development when using the existing collector. The public React dashboard labels tagged samples as **Demo Server Monitoring**. This mode requires the same MongoDB configuration as the rest of the backend and does not require a separate collector process or AI credentials.
 
 ## React Dashboard
 

@@ -17,3 +17,4 @@ class Incident(BaseModel):
     description: str
     metric_snapshot: dict[str, float | int]
     detection_method: Literal["THRESHOLD", "ISOLATION_FOREST", "LOG_PATTERN"]
+    source: str | None = None

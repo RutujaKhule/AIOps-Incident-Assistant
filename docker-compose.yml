@@ -23,6 +23,8 @@ services:
       PORT: 8000
       MONGODB_URI: mongodb://mongodb:27017
       MONGODB_DATABASE: ${MONGODB_DATABASE:-AIOpsIncidentAssistant}
+      DEMO_MODE: ${DEMO_MODE:-false}
+      DEMO_SAMPLE_INTERVAL_SECONDS: ${DEMO_SAMPLE_INTERVAL_SECONDS:-5}
       AI_PROVIDER: ${AI_PROVIDER:-mock}
       AI_MAX_METRICS: ${AI_MAX_METRICS:-30}
       AI_MAX_LOGS: ${AI_MAX_LOGS:-10}
